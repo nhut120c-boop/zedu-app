@@ -8,7 +8,7 @@ import { ReactNode, useEffect, useState } from "react";
 import { Link, useLocation } from "wouter";
 import { toast } from "sonner";
 
-const navItems = [
+const baseNavItems = [
   { href: "/", label: "Tổng quan", icon: Home },
   { href: "/lessons", label: "Bài học", icon: BookOpen },
   { href: "/assignments", label: "Bài tập", icon: ClipboardCheck },
@@ -22,6 +22,10 @@ export default function DashboardLayout({ children, eyebrow, title, description 
   const [open, setOpen] = useState(false);
   const { user, loading, isAuthenticated, logout } = useAuth();
   const utils = trpc.useUtils();
+
+  const navItems = user?.canManage
+    ? [...baseNavItems, { href: "/giao-vien", label: "Quản lý (Admin)", icon: ClipboardCheck }]
+    : baseNavItems;
 
   useEffect(() => {
     const client = getSupabaseBrowserClient();
