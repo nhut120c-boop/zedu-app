@@ -1,0 +1,2 @@
+-- No-op migration: attachmentUrl is a legacy column already present in the baseline schema.
+-- New uploads use attachmentKey; no destructive rename/drop is performed.

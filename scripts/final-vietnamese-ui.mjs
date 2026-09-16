@@ -1,0 +1,14 @@
+import fs from "node:fs";
+const layout = "client/src/components/DashboardLayout.tsx";
+let shell = fs.readFileSync(layout, "utf8").replaceAll("Learn with intent", "Học để tiến bộ");
+fs.writeFileSync(layout, shell);
+const main = "client/src/main.tsx";
+let app = fs.readFileSync(main, "utf8");
+app = app.replace('    console.error("[API Query Error]", error);\n', '    // Lỗi API được xử lý tại từng màn hình, không hiện popup kỹ thuật cho người học.\n');
+app = app.replace('    console.error("[API Mutation Error]", error);\n', '    // Lỗi thao tác được hiển thị bằng thông báo thân thiện tại màn hình tương ứng.\n');
+const stale = /        try \{\n          const rawSupabase = localStorage\.getItem\("zedu-supabase-session"\);[\s\S]*?        \} catch \{\n          \/\/ Supabase session cache unavailable\n        \}\n/;
+app = app.replace(stale, "");
+fs.writeFileSync(main, app);
+const routes = "client/src/App.tsx";
+let router = fs.readFileSync(routes, "utf8").replace('    <Route path="/admin" component={Admin} />\n', "");
+fs.writeFileSync(routes, router);

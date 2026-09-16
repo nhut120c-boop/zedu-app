@@ -1,0 +1,125 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+  --primary: #163454;
+  --primary-foreground: #ffffff;
+  --sidebar-primary: #163454;
+  --sidebar-primary-foreground: #ffffff;
+  --chart-1: #55a585;
+  --chart-2: #e87560;
+  --chart-3: #163454;
+  --chart-4: #a9d7c6;
+  --chart-5: #f4c8bd;
+  --radius: 0.7rem;
+  --background: #f7f5f0;
+  --foreground: #163454;
+  --card: #ffffff;
+  --card-foreground: #163454;
+  --popover: #ffffff;
+  --popover-foreground: #163454;
+  --secondary: #e8f1ed;
+  --secondary-foreground: #163454;
+  --muted: #eef1ee;
+  --muted-foreground: #708090;
+  --accent: #f4c8bd;
+  --accent-foreground: #163454;
+  --destructive: #b9503e;
+  --destructive-foreground: #ffffff;
+  --border: #dbe3e0;
+  --input: #dbe3e0;
+  --ring: #55a585;
+  --sidebar: #fbfaf7;
+  --sidebar-foreground: #163454;
+  --sidebar-accent: #e8f1ed;
+  --sidebar-accent-foreground: #163454;
+  --sidebar-border: #dbe3e0;
+  --sidebar-ring: #55a585;
+}
+
+.dark {
+  --background: #10273f;
+  --foreground: #f7f5f0;
+  --card: #163454;
+  --card-foreground: #f7f5f0;
+  --popover: #163454;
+  --popover-foreground: #f7f5f0;
+  --secondary: #24476a;
+  --secondary-foreground: #f7f5f0;
+  --muted: #24476a;
+  --muted-foreground: #b8c6d1;
+  --accent: #e87560;
+  --accent-foreground: #ffffff;
+  --border: rgba(255, 255, 255, 0.12);
+  --input: rgba(255, 255, 255, 0.16);
+  --ring: #a9d7c6;
+  --sidebar: #10273f;
+  --sidebar-foreground: #f7f5f0;
+  --sidebar-accent: #24476a;
+  --sidebar-accent-foreground: #f7f5f0;
+  --sidebar-border: rgba(255, 255, 255, 0.12);
+  --sidebar-ring: #a9d7c6;
+}
+
+@layer base {
+  * { @apply border-border outline-ring/50; }
+  html { scroll-behavior: smooth; }
+  body { @apply bg-background text-foreground font-sans; }
+  button:not(:disabled), [role="button"]:not([aria-disabled="true"]), [type="button"]:not(:disabled), [type="submit"]:not(:disabled), [type="reset"]:not(:disabled), a[href], select:not(:disabled), input[type="checkbox"]:not(:disabled), input[type="radio"]:not(:disabled) { @apply cursor-pointer; }
+  ::selection { background: #f4c8bd; color: #163454; }
+}
+
+@layer components {
+  .container { width: 100%; margin-left: auto; margin-right: auto; padding-left: 1rem; padding-right: 1rem; }
+  .flex { min-height: 0; min-width: 0; }
+  @media (min-width: 640px) { .container { padding-left: 1.5rem; padding-right: 1.5rem; } }
+  @media (min-width: 1024px) { .container { padding-left: 2rem; padding-right: 2rem; max-width: 1280px; } }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  button, a { transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1), background-color 160ms ease, border-color 160ms ease, color 160ms ease, box-shadow 160ms ease; }
+  button:active, a:active { transform: scale(0.98); }
+}

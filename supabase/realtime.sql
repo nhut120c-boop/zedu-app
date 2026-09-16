@@ -1,0 +1,12 @@
+-- Supabase Realtime setup for ZEdu
+--
+-- ZEdu uses Broadcast, not Postgres Changes: after MySQL commits a message, the backend
+-- sends a small `message:new` event to `message-events:<opaque-user-channel>`. The browser
+-- then refetches the authenticated tRPC inbox. The event contains no message body, role,
+-- cookie, email, or recipient ID.
+--
+-- No SQL table or public SELECT policy is required for Broadcast. In the Supabase Dashboard,
+-- keep Realtime Broadcast enabled. If your project enforces private channels, add the matching
+-- Realtime authorization policy for the `realtime.messages` topic and set the browser channel
+-- option to `{ config: { private: true } }`; otherwise the default public Broadcast channel is
+-- sufficient because the channel token is opaque and no message data is broadcast.

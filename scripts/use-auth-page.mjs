@@ -1,0 +1,11 @@
+import fs from "node:fs";
+const path = "client/src/pages/Home.tsx";
+let text = fs.readFileSync(path, "utf8");
+text = text.replace('import { startLogin } from "@/const";\n', "");
+text = text.replaceAll('onClick={() => startLogin()}', 'onClick={() => { window.location.href = "/auth"; }}');
+fs.writeFileSync(path, text);
+const layout = "client/src/components/DashboardLayout.tsx";
+let shell = fs.readFileSync(layout, "utf8");
+shell = shell.replace('import { startLogin } from "@/const";\n', "");
+shell = shell.replaceAll('onClick={() => startLogin()}', 'onClick={() => { window.location.href = "/auth"; }}');
+fs.writeFileSync(layout, shell);
