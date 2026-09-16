@@ -16,9 +16,6 @@ export default function Admin() {
   const canManage = Boolean(user?.canManage);
   const overview = trpc.learning.adminOverview.useQuery(undefined, { enabled: isAuthenticated && canManage, retry: false });
   const utils = trpc.useUtils();
-  if (loading) return <div className="min-h-screen bg-[#f7f5f0] flex items-center justify-center"><div className="h-10 w-10 animate-spin rounded-full border-4 border-[#c9d7d7] border-t-[#e87560]" /></div>;
-  if (!isAuthenticated) return <div className="min-h-screen bg-[#f7f5f0] p-8 text-center"><h1 className="font-display text-3xl font-bold text-[#163454]">Đăng nhập để tiếp tục</h1><p className="mt-3 text-slate-500">Khu vực này dành cho giáo viên.</p></div>;
-  if (!canManage) return <div className="min-h-screen bg-[#f7f5f0] p-8 text-center"><h1 className="font-display text-3xl font-bold text-[#163454]">Khu vực dành cho giáo viên</h1><p className="mt-3 text-slate-500">Tài khoản của bạn chưa được cấp quyền quản lý lớp học.</p></div>;
   
   const [tab, setTab] = useState<"assignment" | "lesson">("assignment");
   const [title, setTitle] = useState("");
@@ -35,6 +32,10 @@ export default function Admin() {
   const createLesson = trpc.learning.createLesson.useMutation({ onSuccess: async () => { toast.success("Đã tạo bài học."); setTitle(""); setSummary(""); setContent(""); await utils.learning.adminOverview.invalidate(); }, onError: e => toast.error(e.message) });
   const grade = trpc.learning.gradeSubmission.useMutation({ onSuccess: async () => { toast.success("Đã lưu điểm và phản hồi."); setGradingId(null); setScore(""); setFeedback(""); await utils.learning.adminOverview.invalidate(); }, onError: e => toast.error(e.message) });
   const toggleVisibility = trpc.learning.toggleAssignmentVisibility.useMutation({ onSuccess: () => utils.learning.adminOverview.invalidate(), onError: e => toast.error(e.message) });
+
+  if (loading) return <div className="min-h-screen bg-[#f7f5f0] flex items-center justify-center"><div className="h-10 w-10 animate-spin rounded-full border-4 border-[#c9d7d7] border-t-[#e87560]" /></div>;
+  if (!isAuthenticated) return <div className="min-h-screen bg-[#f7f5f0] p-8 text-center"><h1 className="font-display text-3xl font-bold text-[#163454]">Đăng nhập để tiếp tục</h1><p className="mt-3 text-slate-500">Khu vực này dành cho giáo viên.</p></div>;
+  if (!canManage) return <div className="min-h-screen bg-[#f7f5f0] p-8 text-center"><h1 className="font-display text-3xl font-bold text-[#163454]">Khu vực dành cho giáo viên</h1><p className="mt-3 text-slate-500">Tài khoản của bạn chưa được cấp quyền quản lý lớp học.</p></div>;
   
   const submitContent = async () => { 
     if (tab === "assignment") {
