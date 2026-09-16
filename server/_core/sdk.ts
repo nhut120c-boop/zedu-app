@@ -278,10 +278,13 @@ class SDKServer {
         const { data } = await supabase.auth.getUser(bearer.slice(7));
         if (data.user) {
           const authUser = data.user;
-          const name = (authUser.user_metadata?.full_name || authUser.user_metadata?.name || authUser.email?.split("@")[0] || "Học viên") as string;
-          await db.upsertUser({ openId: authUser.id, name, email: authUser.email ?? null, loginMethod: "email" });
-          const user = await db.getUserByOpenId(authUser.id);
-          if (user) return user;
+          let existingUser = await db.getUserByOpenId(authUser.id);
+          if (!existingUser) {
+            const name = (authUser.user_metadata?.full_name || authUser.user_metadata?.name || authUser.email?.split("@")[0] || "Học viên") as string;
+            await db.upsertUser({ openId: authUser.id, name, email: authUser.email ?? null, loginMethod: "email" });
+            existingUser = await db.getUserByOpenId(authUser.id);
+          }
+          if (existingUser) return existingUser;
         }
       }
     }
