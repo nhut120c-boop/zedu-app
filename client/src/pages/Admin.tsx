@@ -22,6 +22,7 @@ export default function Admin() {
   const [description, setDescription] = useState("");
   const [summary, setSummary] = useState("");
   const [content, setContent] = useState("");
+  const [durationMinutes, setDurationMinutes] = useState("30");
   const [file, setFile] = useState<File | null>(null);
   
   const [gradingId, setGradingId] = useState<number | null>(null);
@@ -29,7 +30,7 @@ export default function Admin() {
   const [feedback, setFeedback] = useState("");
   
   const createAssignment = trpc.learning.createAssignment.useMutation({ onSuccess: async () => { toast.success("Đã tạo bài tập."); setTitle(""); setDescription(""); setFile(null); await utils.learning.adminOverview.invalidate(); }, onError: e => toast.error(e.message) });
-  const createLesson = trpc.learning.createLesson.useMutation({ onSuccess: async () => { toast.success("Đã tạo bài học."); setTitle(""); setSummary(""); setContent(""); await utils.learning.adminOverview.invalidate(); }, onError: e => toast.error(e.message) });
+  const createLesson = trpc.learning.createLesson.useMutation({ onSuccess: async () => { toast.success("Đã tạo bài học."); setTitle(""); setSummary(""); setContent(""); setDurationMinutes("30"); setFile(null); await utils.learning.adminOverview.invalidate(); }, onError: e => toast.error(e.message) });
   const grade = trpc.learning.gradeSubmission.useMutation({ onSuccess: async () => { toast.success("Đã lưu điểm và phản hồi."); setGradingId(null); setScore(""); setFeedback(""); await utils.learning.adminOverview.invalidate(); }, onError: e => toast.error(e.message) });
   const toggleVisibility = trpc.learning.toggleAssignmentVisibility.useMutation({ onSuccess: () => utils.learning.adminOverview.invalidate(), onError: e => toast.error(e.message) });
 
@@ -44,7 +45,7 @@ export default function Admin() {
       if (tab === "assignment") {
         createAssignment.mutate({ title, description, maxScore: 100, attachmentData, attachmentName: file?.name, attachmentType: file?.type });
       } else {
-        createLesson.mutate({ title, summary, content, durationMinutes: 30, attachmentData, attachmentName: file?.name, attachmentType: file?.type });
+        createLesson.mutate({ title, summary, content, durationMinutes: Number(durationMinutes) || 30, attachmentData, attachmentName: file?.name, attachmentType: file?.type });
       }
     } catch (error) {
       toast.error("Không thể đọc file đính kèm.");
@@ -78,6 +79,10 @@ export default function Admin() {
               <>
                 <Input value={summary} onChange={e => setSummary(e.target.value)} placeholder="Tóm tắt bài học" className="mt-3 border-white/10 bg-white/10 text-white placeholder:text-white/35" />
                 <Textarea value={content} onChange={e => setContent(e.target.value)} placeholder="Nội dung bài học" className="mt-3 min-h-36 border-white/10 bg-white/10 text-white placeholder:text-white/35" />
+                <div className="mt-3 flex items-center gap-3 rounded-lg border border-white/10 bg-white/5 p-3">
+                  <span className="text-sm font-medium text-white/70">Thời lượng (phút):</span>
+                  <Input type="number" min="5" max="600" value={durationMinutes} onChange={e => setDurationMinutes(e.target.value)} className="w-24 border-white/20 bg-white/10 text-white" />
+                </div>
               </>
             )}
             <div className="mt-3 rounded-lg bg-white/5 p-3">
