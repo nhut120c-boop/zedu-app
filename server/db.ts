@@ -10,7 +10,7 @@ function client() {
 function userFromRow(row: any): User {
   return { id: Number(row.id), openId: row.open_id, name: row.name, email: row.email, loginMethod: row.login_method, role: row.role, createdAt: new Date(row.created_at), updatedAt: new Date(row.updated_at), lastSignedIn: new Date(row.last_signed_in) } as User;
 }
-function lessonFromRow(row: any): Lesson { return { id: Number(row.id), title: row.title, summary: row.summary, content: row.content, durationMinutes: row.duration_minutes, published: row.published ? 1 : 0, createdAt: new Date(row.created_at), updatedAt: new Date(row.updated_at) } as Lesson; }
+function lessonFromRow(row: any): Lesson { return { id: Number(row.id), title: row.title, summary: row.summary, content: row.content, durationMinutes: row.duration_minutes, published: row.published ? 1 : 0, attachmentKey: row.attachment_key, attachmentName: row.attachment_name, createdAt: new Date(row.created_at), updatedAt: new Date(row.updated_at) } as Lesson; }
 function assignmentFromRow(row: any): Assignment { return { id: Number(row.id), title: row.title, description: row.description, dueAt: row.due_at ? new Date(row.due_at) : null, maxScore: row.max_score, attachmentKey: row.attachment_key, attachmentName: row.attachment_name, visible: row.visible ?? 1, createdBy: row.created_by, createdAt: new Date(row.created_at), updatedAt: new Date(row.updated_at) } as Assignment; }
 function submissionFromRow(row: any): Submission { return { id: Number(row.id), assignmentId: Number(row.assignment_id), studentId: Number(row.student_id), answerText: row.answer_text, attachmentUrl: row.attachment_url, attachmentKey: row.attachment_key, attachmentName: row.attachment_name, status: row.status, score: row.score, feedback: row.feedback, submittedAt: new Date(row.submitted_at), updatedAt: new Date(row.updated_at) } as Submission; }
 function messageFromRow(row: any): Message { return { id: Number(row.id), senderId: Number(row.sender_id), recipientId: Number(row.recipient_id), body: row.body, readAt: row.read_at ? new Date(row.read_at) : null, createdAt: new Date(row.created_at) } as Message; }
@@ -70,8 +70,8 @@ export async function getAssignmentById(id: number) {
   if (error) throw error;
   return data ? assignmentFromRow(data) : undefined;
 }
-export async function createLesson(input: { title: string; summary?: string | null; content?: string | null; durationMinutes: number }) {
-  const { data, error } = await client().from("lessons").insert({ title: input.title, summary: input.summary || null, content: input.content || null, duration_minutes: input.durationMinutes }).select("id").single();
+export async function createLesson(input: { title: string; summary?: string | null; content?: string | null; durationMinutes: number; attachmentKey?: string | null; attachmentName?: string | null }) {
+  const { data, error } = await client().from("lessons").insert({ title: input.title, summary: input.summary || null, content: input.content || null, duration_minutes: input.durationMinutes, attachment_key: input.attachmentKey || null, attachment_name: input.attachmentName || null }).select("id").single();
   if (error) throw error;
   return Number(data.id);
 }

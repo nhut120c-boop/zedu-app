@@ -19,6 +19,8 @@ export const lessons = mysqlTable("lessons", {
   content: text("content"),
   durationMinutes: int("durationMinutes").default(30).notNull(),
   published: int("published").default(1).notNull(),
+  attachmentKey: text("attachmentKey"),
+  attachmentName: varchar("attachmentName", { length: 255 }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

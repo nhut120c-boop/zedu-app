@@ -38,15 +38,16 @@ export default function Admin() {
   if (!canManage) return <div className="min-h-screen bg-[#f7f5f0] p-8 text-center"><h1 className="font-display text-3xl font-bold text-[#163454]">Khu vực dành cho giáo viên</h1><p className="mt-3 text-slate-500">Tài khoản của bạn chưa được cấp quyền quản lý lớp học.</p></div>;
   
   const submitContent = async () => { 
-    if (tab === "assignment") {
-      try {
-        const attachmentData = file ? await readFileAsDataUrl(file) : undefined;
+    try {
+      const attachmentData = file ? await readFileAsDataUrl(file) : undefined;
+      
+      if (tab === "assignment") {
         createAssignment.mutate({ title, description, maxScore: 100, attachmentData, attachmentName: file?.name, attachmentType: file?.type });
-      } catch (error) {
-        toast.error("Không thể đọc file đính kèm.");
+      } else {
+        createLesson.mutate({ title, summary, content, durationMinutes: 30, attachmentData, attachmentName: file?.name, attachmentType: file?.type });
       }
-    } else {
-      createLesson.mutate({ title, summary, content, durationMinutes: 30 });
+    } catch (error) {
+      toast.error("Không thể đọc file đính kèm.");
     }
   };
   
@@ -72,26 +73,24 @@ export default function Admin() {
             </div>
             <Input value={title} onChange={e => setTitle(e.target.value)} placeholder="Tiêu đề" className="mt-6 border-white/10 bg-white/10 text-white placeholder:text-white/35" />
             {tab === "assignment" ? (
-              <>
-                <Textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Mô tả yêu cầu bài tập" className="mt-3 min-h-36 border-white/10 bg-white/10 text-white placeholder:text-white/35" />
-                <div className="mt-3 rounded-lg bg-white/5 p-3">
-                  <label className="flex max-w-full cursor-pointer items-center gap-2 truncate text-white/70 hover:text-white">
-                    <Paperclip size={15} />
-                    <span className="truncate">{file ? file.name : "Đính kèm file PDF/DOCX (tối đa 10MB)"}</span>
-                    <input type="file" accept=".pdf,.doc,.docx" className="sr-only" onChange={e => {
-                      const next = e.target.files?.[0];
-                      if (next && next.size > MAX_FILE_SIZE) { toast.error("File tối đa 10MB."); return; }
-                      setFile(next || null);
-                    }} />
-                  </label>
-                </div>
-              </>
+              <Textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Mô tả yêu cầu bài tập" className="mt-3 min-h-36 border-white/10 bg-white/10 text-white placeholder:text-white/35" />
             ) : (
               <>
                 <Input value={summary} onChange={e => setSummary(e.target.value)} placeholder="Tóm tắt bài học" className="mt-3 border-white/10 bg-white/10 text-white placeholder:text-white/35" />
                 <Textarea value={content} onChange={e => setContent(e.target.value)} placeholder="Nội dung bài học" className="mt-3 min-h-36 border-white/10 bg-white/10 text-white placeholder:text-white/35" />
               </>
             )}
+            <div className="mt-3 rounded-lg bg-white/5 p-3">
+              <label className="flex max-w-full cursor-pointer items-center gap-2 truncate text-white/70 hover:text-white">
+                <Paperclip size={15} />
+                <span className="truncate">{file ? file.name : "Đính kèm file PDF/DOCX (tối đa 10MB)"}</span>
+                <input type="file" accept=".pdf,.doc,.docx" className="sr-only" onChange={e => {
+                  const next = e.target.files?.[0];
+                  if (next && next.size > MAX_FILE_SIZE) { toast.error("File tối đa 10MB."); return; }
+                  setFile(next || null);
+                }} />
+              </label>
+            </div>
             <Button disabled={!title.trim() || (tab === "assignment" ? !description.trim() : !content.trim()) || createAssignment.isPending || createLesson.isPending} onClick={submitContent} className="mt-4 w-full rounded-xl bg-[#f4c8bd] text-[#163454] hover:bg-[#f7d8d0]">
               <Plus size={16} /> {tab === "assignment" ? (createAssignment.isPending ? "Đang tạo..." : "Tạo bài tập") : (createLesson.isPending ? "Đang tạo..." : "Tạo bài học")}
             </Button>

@@ -20,7 +20,13 @@ export const appRouter = router({
     logout: publicProcedure.mutation(({ ctx }) => { const cookieOptions = getSessionCookieOptions(ctx.req); ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 }); return { success: true } as const; }),
   }),
   learning: router({
-    listLessons: protectedProcedure.query(() => getPublishedLessons()),
+    listLessons: protectedProcedure.query(async () => {
+      const lessons = await getPublishedLessons();
+      return Promise.all(lessons.map(async lesson => ({
+        ...lesson,
+        attachmentUrl: lesson.attachmentKey ? await getAssignmentFileUrl(lesson.attachmentKey) : null
+      })));
+    }),
     listAssignments: protectedProcedure.query(async ({ ctx }) => {
       const rows = await getAssignments();
       const filteredRows = ctx.user.role === "admin" ? rows : rows.filter(r => r.visible);
@@ -64,7 +70,15 @@ export const appRouter = router({
       await gradeSubmission(input.submissionId, input.score, input.feedback);
       return { success: true } as const;
     }),
-    createLesson: adminProcedure.input(z.object({ title: z.string().trim().min(2).max(180), summary: z.string().trim().max(500).optional(), content: z.string().trim().max(20000).optional(), durationMinutes: z.number().int().min(5).max(600).default(30) })).mutation(({ input }) => createLesson(input)),
+    createLesson: adminProcedure.input(z.object({ title: z.string().trim().min(2).max(180), summary: z.string().trim().max(500).optional(), content: z.string().trim().max(20000).optional(), durationMinutes: z.number().int().min(5).max(600).default(30), ...attachmentSchema.shape })).mutation(async ({ input }) => {
+      let attachmentKey: string | null = null;
+      if (input.attachmentData && input.attachmentName) {
+        const bytes = Buffer.from(input.attachmentData.replace(/^data:[^;]+;base64,/, ""), "base64");
+        if (bytes.length > 10 * 1024 * 1024) throw new TRPCError({ code: "PAYLOAD_TOO_LARGE", message: "File đính kèm tối đa 10MB." });
+        attachmentKey = (await uploadAssignmentFile(input.attachmentName, bytes, input.attachmentType || "application/octet-stream")).key;
+      }
+      return createLesson({ title: input.title, summary: input.summary, content: input.content, durationMinutes: input.durationMinutes, attachmentKey, attachmentName: input.attachmentName || null });
+    }),
     createAssignment: adminProcedure.input(z.object({ title: z.string().trim().min(2).max(180), description: z.string().trim().min(5).max(10000), dueAt: z.coerce.date().optional(), maxScore: z.number().int().min(1).max(1000).default(100), ...attachmentSchema.shape })).mutation(async ({ ctx, input }) => {
       let attachmentKey: string | null = null;
       if (input.attachmentData && input.attachmentName) {
